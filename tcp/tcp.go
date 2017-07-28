@@ -1,36 +1,14 @@
-package main
+package tcp
 
 import (
 	"net"
-	"os"
 	"fmt"
-	"strconv"
-	"log"
-	"github.com/vikramjakhr/tcp-server/util"
-	"github.com/vikramjakhr/tcp-server/mqtt"
+	"os"
+	"gitlab.intelligrape.net/tothenew/tcp-server-integration/mqtt"
+	"gitlab.intelligrape.net/tothenew/tcp-server-integration/util"
 )
 
-const defaultPort = "6666"
-
-func main() {
-	port := listeningPort(os.Args)
-	registerTCPListener(port)
-}
-
-func listeningPort(args []string) (string) {
-	if len(args) > 1 && args[1] != "" {
-		port := args[1]
-		_, err := strconv.ParseUint(port, 10, 0)
-		if err != nil {
-			log.Fatal("Specify a port to listen")
-		}
-		return port
-	}
-	log.Println("No port specified, Falling back to default ", defaultPort)
-	return defaultPort
-}
-
-func registerTCPListener(port string) {
+func RegisterTCPListener(port string) {
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", ":"+port)
 	checkError(err)
 

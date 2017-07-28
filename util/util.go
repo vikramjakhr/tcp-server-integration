@@ -4,7 +4,10 @@ import (
 	"strings"
 	"fmt"
 	"strconv"
+	"flag"
 )
+
+var Args OSArgs
 
 type JsonPayload struct {
 	State State `json:"state"`
@@ -63,5 +66,32 @@ func payload(dataMap map[string]float64) JsonPayload {
 				},
 			},
 		},
+	}
+}
+
+type OSArgs struct {
+	Port           string
+	CertFile       string
+	PrivateKeyFile string
+	Host           string
+	ShadowUpdate   string
+	ClientID       string
+}
+
+func ParseArgs() OSArgs {
+	port := flag.String("port", "9292", "TCP port to listen")
+	certFile := flag.String("certFile", "/opt/certificates/certificate.pem.crt", "Certificate file")
+	privateKeyFile := flag.String("privateKeyFile", "/opt/certificates/private.pem.key", "Private key file")
+	host := flag.String("host", "a2kbv0xdj5homp.iot.us-east-1.amazonaws.com", "AWS IoT host name")
+	shadowUpdate := flag.String("shadowUpdate", "$aws/things/IoI/shadow/update", "Shadow update topic name")
+	clientID := flag.String("clientID", "Client", "Shadow update topic name")
+	flag.Parse()
+	return OSArgs{
+		Port:           *port,
+		CertFile:       *certFile,
+		PrivateKeyFile: *privateKeyFile,
+		Host:           *host,
+		ShadowUpdate:   *shadowUpdate,
+		ClientID:       *clientID,
 	}
 }

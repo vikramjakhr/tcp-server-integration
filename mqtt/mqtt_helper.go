@@ -9,19 +9,16 @@ import (
 	"time"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/vikramjakhr/tcp-server/util"
 	"encoding/json"
+	"gitlab.intelligrape.net/tothenew/tcp-server-integration/util"
 )
 
 const (
-	port         = 8883
-	shadowUpdate = "$aws/things/IoI/shadow/update"
+	mqttPort = 8883
 )
 
 var certificate tls.Certificate = loadCertificate()
-var host string = "a2kbv0xdj5homp.iot.us-east-1.amazonaws.com"
-var brokerURL string = fmt.Sprintf("tcps://%s:%d%s", host, port, "/mqtt")
-var cid string = "ClientID"
+var brokerURL string = fmt.Sprintf("tcps://%s:%d%s", util.Args.Host, mqttPort, "/mqtt")
 var connOpts *MQTT.ClientOptions = clientOptions()
 var mqttClient MQTT.Client = client()
 
@@ -42,15 +39,14 @@ func init() {
 }
 
 func loadCertificate() tls.Certificate {
-	cer, err := tls.LoadX509KeyPair("/home/vikram/Downloads/IoI/8e8a17c03a-certificate.pem.crt",
-		"/home/vikram/Downloads/IoI/8e8a17c03a-private.pem.key")
+	cer, err := tls.LoadX509KeyPair(util.Args.CertFile, util.Args.PrivateKeyFile)
 	check(err)
 	return cer
 }
 
 func clientOptions() *MQTT.ClientOptions {
 	config := &MQTT.ClientOptions{
-		ClientID:             cid,
+		ClientID:             util.Args.ClientID,
 		CleanSession:         true,
 		AutoReconnect:        true,
 		MaxReconnectInterval: 1 * time.Second,
@@ -68,7 +64,7 @@ func client() MQTT.Client {
 func Publish(payload util.JsonPayload) {
 	bytes, _ := json.Marshal(payload);
 	log.Println("Publishing payload : ", string(bytes))
-	token := mqttClient.Publish(shadowUpdate, byte(0), false, string(bytes))
+	token := mqttClient.Publish(util.Args.ShadowUpdate, byte(0), false, string(bytes))
 	token.Wait()
 	log.Println("Published")
 }
