@@ -6,15 +6,32 @@ import (
 	"fmt"
 	"strconv"
 	"log"
-	"errors"
+	"github.com/vikramjakhr/tcp-server/util"
+	"github.com/vikramjakhr/tcp-server/mqtt"
 )
 
+const defaultPort = "6666"
+
 func main() {
-	port,err := port(os.Args)
-	if err != nil {
-		log.Fatal("Please specify a port to listen")
+	port := listeningPort(os.Args)
+	registerTCPListener(port)
+}
+
+func listeningPort(args []string) (string) {
+	if len(args) > 1 && args[1] != "" {
+		port := args[1]
+		_, err := strconv.ParseUint(port, 10, 0)
+		if err != nil {
+			log.Fatal("Specify a port to listen")
+		}
+		return port
 	}
-	tcpAddr, err := net.ResolveTCPAddr("tcp4", ":" + port)
+	log.Println("No port specified, Falling back to default ", defaultPort)
+	return defaultPort
+}
+
+func registerTCPListener(port string) {
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", ":"+port)
 	checkError(err)
 
 	listener, err := net.ListenTCP("tcp", tcpAddr)
@@ -30,18 +47,6 @@ func main() {
 	}
 }
 
-func port(args []string) (string, error) {
-	if len(args) > 1 && args[1] != "" {
-		port := args[1]
-		_, err := strconv.ParseUint(port, 10, 0)
-		if err != nil {
-			log.Fatal("Specify a port to listen")
-		}
-		return port, nil
-	}
-	return "", errors.New("value out of range")
-}
-
 func handleClient(conn net.Conn) {
 	var buf [512]byte
 	for {
@@ -54,7 +59,9 @@ func handleClient(conn net.Conn) {
 		if err2 != nil {
 			return
 		}
-		println("[x]: " + string(buf[0:n]))
+		data := string(buf[0:n])
+		println("[x]: " + data)
+		mqtt.Publish(util.ParsePayload(data))
 	}
 }
 
