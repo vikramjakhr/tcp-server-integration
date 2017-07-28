@@ -39,12 +39,14 @@ func init() {
 }
 
 func loadCertificate() tls.Certificate {
+	log.Println("Loading certificates ", util.Args.CertFile + " and ", util.Args.PrivateKeyFile)
 	cer, err := tls.LoadX509KeyPair(util.Args.CertFile, util.Args.PrivateKeyFile)
 	check(err)
 	return cer
 }
 
 func clientOptions() *MQTT.ClientOptions {
+	log.Println("Creating MQTT config object")
 	config := &MQTT.ClientOptions{
 		ClientID:             util.Args.ClientID,
 		CleanSession:         true,
@@ -58,6 +60,7 @@ func clientOptions() *MQTT.ClientOptions {
 }
 
 func client() MQTT.Client {
+	log.Println("Creating New MQQT client")
 	return MQTT.NewClient(connOpts)
 }
 

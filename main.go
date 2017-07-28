@@ -6,6 +6,5 @@ import (
 )
 
 func main() {
-	util.Args = util.ParseArgs()
 	tcp.RegisterTCPListener(util.Args.Port)
 }
