@@ -39,7 +39,7 @@ func init() {
 }
 
 func loadCertificate() tls.Certificate {
-	log.Println("Loading certificates ", util.Args.CertFile + " and ", util.Args.PrivateKeyFile)
+	log.Println("Loading certificates ", util.Args.CertFile+" and ", util.Args.PrivateKeyFile)
 	cer, err := tls.LoadX509KeyPair(util.Args.CertFile, util.Args.PrivateKeyFile)
 	check(err)
 	return cer
@@ -66,8 +66,9 @@ func client() MQTT.Client {
 
 func Publish(payload util.JsonPayload) {
 	bytes, _ := json.Marshal(payload);
-	log.Println("Publishing payload : ", string(bytes))
-	token := mqttClient.Publish(util.Args.ShadowUpdate, byte(0), false, string(bytes))
+	payloadAsString := string(bytes)
+	log.Println("Publishing payload : ", payloadAsString)
+	token := mqttClient.Publish(util.Args.ShadowUpdate, byte(0), false, payloadAsString)
 	token.Wait()
 	log.Println("Published")
 }

@@ -92,9 +92,6 @@ func ParseArgs() OSArgs {
 	shadowUpdate := flag.String("shadowUpdate", "$aws/things/IoI/shadow/update", "Shadow update topic name")
 	clientID := flag.String("clientID", "Client", "Shadow update topic name")
 	flag.Parse()
-	fmt.Println(*port)
-	fmt.Println(*certFile)
-	fmt.Println(*privateKeyFile)
 	return OSArgs{
 		Port:           *port,
 		CertFile:       *certFile,
