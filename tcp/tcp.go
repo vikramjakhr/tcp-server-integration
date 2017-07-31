@@ -20,8 +20,10 @@ func RegisterTCPListener(port string) {
 		if err != nil {
 			continue
 		}
-		handleClient(conn)
-		conn.Close()
+		go func() {
+			defer conn.Close()
+			handleClient(conn)
+		}()
 	}
 }
 

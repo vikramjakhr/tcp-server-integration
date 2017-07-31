@@ -32,9 +32,9 @@ func init() {
 	signal.Notify(c, os.Interrupt)
 	go func() {
 		<-c
-		fmt.Println(c)
 		mqttClient.Disconnect(250)
 		fmt.Println("[MQTT] Disconnected")
+		os.Exit(0)
 	}()
 }
 
