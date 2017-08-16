@@ -3,9 +3,9 @@ package util
 import (
 	"strings"
 	"fmt"
-	"strconv"
 	"flag"
 	"log"
+	"strconv"
 )
 
 var Args OSArgs
@@ -28,47 +28,52 @@ type Reported struct {
 }
 
 type Payload struct {
-	CO    float64 `json:"CO"`
-	Temp  float64 `json:"temp"`
-	Hum   float64 `json:"hum"`
-	Pre   float64 `json:"pre"`
-	O3    float64 `json:"O3"`
-	SO2   float64 `json:"SO2"`
-	NO2   float64 `json:"NO2"`
-	PM1   float64 `json:"PM1"`
-	PM2_5 float64 `json:"PM2.5"`
-	PM10  float64 `json:"PM10"`
+	NodeID    string `json:"NodeID"`
+	TimeStamp string `json:"TimeStamp"`
+	CO        float64 `json:"CO"`
+	Temp      float64 `json:"temp"`
+	Hum       float64 `json:"hum"`
+	Pre       float64 `json:"pre"`
+	O3        float64 `json:"O3"`
+	SO2       float64 `json:"SO2"`
+	NO2       float64 `json:"NO2"`
+	PM1       float64 `json:"PM1"`
+	PM2_5     float64 `json:"PM2.5"`
+	PM10      float64 `json:"PM10"`
+	BatLevel  float64 `json:"BatLevel"`
 }
 
 func ParsePayload(data string) JsonPayload {
-	var dataMap map[string]float64 = make(map[string]float64)
+	var dataMap map[string]interface{} = make(map[string]interface{})
 	tabSplitData := strings.Split(data, "\t")
 	for _, value := range tabSplitData {
 		fields := strings.Split(value, "=")
 		if fields != nil && len(fields) == 2 {
-			val, _ := strconv.ParseFloat(fields[1], 64)
-			dataMap[fields[0]] = val
+			dataMap[fields[0]] = fields[1]
 		}
 	}
 	fmt.Println(dataMap)
 	return payload(dataMap)
 }
 
-func payload(dataMap map[string]float64) JsonPayload {
+func payload(dataMap map[string]interface{}) JsonPayload {
 	return JsonPayload{
 		State: State{
 			Reported: Reported{
 				Data: Payload{
-					CO:    dataMap["CO"],
-					Temp:  dataMap["temp"],
-					Hum:   dataMap["hum"],
-					Pre:   dataMap["pre"],
-					O3:    dataMap["O3"],
-					SO2:   dataMap["SO2"],
-					NO2:   dataMap["NO2"],
-					PM1:   dataMap["PM1"],
-					PM2_5: dataMap["PM2.5"],
-					PM10:  dataMap["PM10"],
+					NodeID:    strings.TrimSpace(dataMap["NodeID"].(string)),
+					TimeStamp: strings.TrimSpace(dataMap["TimeStamp"].(string)),
+					CO:        ToFloat64(dataMap["CO"]),
+					Temp:      ToFloat64(dataMap["temp"]),
+					Hum:       ToFloat64(dataMap["hum"]),
+					Pre:       ToFloat64(dataMap["pre"]),
+					O3:        ToFloat64(dataMap["O3"]),
+					SO2:       ToFloat64(dataMap["SO2"]),
+					NO2:       ToFloat64(dataMap["NO2"]),
+					PM1:       ToFloat64(dataMap["PM1"]),
+					PM2_5:     ToFloat64(dataMap["PM2.5"]),
+					PM10:      ToFloat64(dataMap["PM10"]),
+					BatLevel:  ToFloat64(dataMap["BatLevel"]),
 				},
 			},
 		},
@@ -100,4 +105,9 @@ func ParseArgs() OSArgs {
 		ShadowUpdate:   *shadowUpdate,
 		ClientID:       *clientID,
 	}
+}
+
+func ToFloat64(any interface{}) float64 {
+	num, _ := strconv.ParseFloat(any.(string), 64)
+	return num
 }
