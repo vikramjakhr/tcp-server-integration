@@ -95,7 +95,7 @@ func ParseArgs() OSArgs {
 	port := flag.String("port", "9292", "TCP port to listen")
 	certFile := flag.String("certFile", "/opt/certificates/IoI-certificate.pem.crt", "Certificate file")
 	privateKeyFile := flag.String("privateKeyFile", "/opt/certificates/IoI-private.pem.key", "Private key file")
-	host := flag.String("host", "a2kbv0xdj5homp.iot.us-east-1.amazonaws.com", "AWS IoT host name")
+	host := flag.String("host", "a3vcoa0e7h8vdn.iot.us-east-1.amazonaws.com", "AWS IoT host name")
 	shadowUpdate := flag.String("shadowUpdate", "$aws/things/IoI/shadow/update", "Shadow update topic name")
 	clientID := flag.String("clientID", "tcp-server-client", "client name")
 	flag.Parse()
